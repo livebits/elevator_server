@@ -1,0 +1,91 @@
+{
+  "_from": "loopback-paginator",
+  "_id": "loopback-paginator@1.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-dlG5Ii6tRER9yzVV+3TejWbiGI8P5NdvIFn6cMyizNrRXv1LoUQuwVpWDNNFlvCTImkdoJJAchTRelvJEfG4Jw==",
+  "_location": "/loopback-paginator",
+  "_phantomChildren": {
+    "ms": "2.0.0"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "loopback-paginator",
+    "name": "loopback-paginator",
+    "escapedName": "loopback-paginator",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/loopback-paginator/-/loopback-paginator-1.0.0.tgz",
+  "_shasum": "360e351373175184d42ebe67a435b956d4c9f003",
+  "_spec": "loopback-paginator",
+  "_where": "C:\\xampp\\htdocs\\swash\\swash_server",
+  "author": {
+    "name": "Manuel Heidrich"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-async-to-generator",
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/prototype-berlin/loopback-paginator/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Manuel Heidrich",
+      "email": "mail@manuel-heidrich.com",
+      "url": "https://www.manuel-heidrich.com"
+    },
+    {
+      "name": "prototype.berlin GmbH",
+      "email": "info@prototype.berlin",
+      "url": "https://www.prototype.berlin"
+    }
+  ],
+  "dependencies": {
+    "debug": "3.1.0"
+  },
+  "deprecated": false,
+  "description": "Pagination mixin for LoopBack.",
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-plugin-transform-async-to-generator": "6.24.1",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-preset-es2015": "6.24.1"
+  },
+  "homepage": "https://github.com/prototype-berlin/loopback-paginator#readme",
+  "keywords": [
+    "loopback",
+    "mixin",
+    "pagination"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "loopback-paginator",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prototype-berlin/loopback-paginator.git"
+  },
+  "scripts": {
+    "release": "rm -rf lib && npm run transpile && np",
+    "transpile": "babel src --out-dir lib"
+  },
+  "version": "1.0.0"
+}

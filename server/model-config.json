@@ -1,0 +1,114 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins/loopback-paginator/lib",
+      "../node_modules/loopback-ds-timestamp-mixin",
+      "../node_modules/loopback-import-mixin/dist",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "User": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": true
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": true,
+    "options": {
+      "strictObjectIDCoercion": true
+    }
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": true
+  },
+  "MyAccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AppUser": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Manager": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Deal": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ServiceSchedule": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Damage": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Report": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Factor": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FactorItem": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Payment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FactorPayment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "DealPayment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Comment": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Company": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Settings": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Storage": {
+    "dataSource": "storage",
+    "public": true
+  },
+  "container": {
+    "dataSource": "container",
+    "public": true
+  },
+  "Message": {
+    "dataSource": "db",
+    "public": true
+  }
+}

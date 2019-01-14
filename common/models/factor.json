@@ -1,0 +1,62 @@
+{
+  "name": "Factor",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "factor"
+    },
+    "validateUpsert": true
+  },
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdAt",
+      "updatedAt": "modifiedAt",
+      "required": false,
+      "validateUpsert": true,
+      "silenceWarnings": false
+    }
+  },
+  "properties": {
+    "damageId": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "paymentStatus": {
+      "type": "string"
+    },
+    "sumPrice": {
+      "type": "number"
+    },
+    "createdAt": {
+      "type": "date"
+    },
+    "modifiedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "damage": {
+      "type": "belongsTo",
+      "model": "Damage",
+      "foreignKey": "damageId"
+    },
+    "factorItems": {
+      "type": "hasMany",
+      "model": "FactorItem",
+      "foreignKey": "factorId"
+    },
+    "payments": {
+      "type": "hasMany",
+      "model": "Payment",
+      "foreignKey": "FactorId",
+      "through": "FactorPayment",
+      "keyThrough": "PaymentId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

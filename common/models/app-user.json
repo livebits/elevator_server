@@ -1,0 +1,153 @@
+{
+  "name": "AppUser",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "app_user"
+    },
+    "validateUpsert": true
+  },
+  "hidden": [],
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdAt",
+      "updatedAt": "modifiedAt",
+      "required": false,
+      "validateUpsert": true,
+      "silenceWarnings": false
+    },
+    "Import": [
+      {
+        "pk": "",
+        "method": "importCustomers",
+        "map": {
+          "firstname": "firstname",
+          "lastname": "lastname",
+          "mobile": "mobile",
+          "address": "address",
+          "username": "username",
+          "password": "password"
+        },
+        "relations": {
+          "roles": {
+            "type": "create",
+            "map": {
+              "roleId": 1
+            }
+          }
+        }
+      }
+    ]
+  },
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string",
+      "required": true
+    },
+    "verificationCode": {
+      "type": "string"
+    },
+    "verificationCodeExpiredAt": {
+      "type": "date"
+    },
+    "status": {
+      "type": "string"
+    },
+    "firstname": {
+      "type": "string"
+    },
+    "lastname": {
+      "type": "string"
+    },
+    "birthDate": {
+      "type": "date"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "companyId": {
+      "type": "number"
+    },
+    "latitude": {
+      "type": "string"
+    },
+    "longitude": {
+      "type": "string"
+    },
+    "buildingName": {
+      "type": "string",
+      "length": 100
+    },
+    "address": {
+      "type": "string",
+      "length": 1000
+    },
+    "createdAt": {
+      "type": "date"
+    },
+    "modifiedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "accessTokens": {
+      "type": "hasMany",
+      "model": "MyAccessToken",
+      "polymorphic": {
+        "foreignKey": "userId",
+        "discriminator": "principalType"
+      },
+      "options": {
+        "disableInclude": true
+      }
+    },
+    "roles": {
+      "type": "hasAndBelongsToMany",
+      "model": "Role",
+      "through": "RoleMapping",
+      "polymorphic": "principal"
+    },
+    "damages": {
+      "type": "hasMany",
+      "model": "Damage",
+      "foreignKey": "appUserId"
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "DENY"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "loginAppUser"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "checkVerification"
+    }
+  ],
+  "methods": {}
+}

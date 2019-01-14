@@ -1,0 +1,35 @@
+{
+  "name": "MyAccessToken",
+  "base": "AccessToken",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "my_access_token"
+    },
+    "validateUpsert": true
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "manager": {
+      "type": "belongsTo",
+      "idName": "id",
+      "polymorphic": {
+        "idType": "string",
+        "foreignKey": "userId",
+        "discriminator": "principalType"
+      }
+    },
+    "appUser": {
+      "type": "belongsTo",
+      "idName": "id",
+      "polymorphic": {
+        "idType": "string",
+        "foreignKey": "userId",
+        "discriminator": "principalType"
+      }
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

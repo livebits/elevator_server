@@ -1,0 +1,16 @@
+{
+  "loopback-component-explorer": {
+    "mountPath": "/explorer",
+    "generateOperationScopedModels": true
+  },
+  "loopback-component-migrate": {
+    "dataSource": "db",
+    "enableRest": true
+  },
+  "loopback-content-range": {
+    "pattern": [
+      "*.find"
+    ],
+    "relatedModels": true
+  }
+}

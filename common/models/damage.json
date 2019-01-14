@@ -1,0 +1,68 @@
+{
+  "name": "Damage",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "damage"
+    },
+    "validateUpsert": true
+  },
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdAt",
+      "updatedAt": "modifiedAt",
+      "required": false,
+      "validateUpsert": true,
+      "silenceWarnings": false
+    }
+  },
+  "properties": {
+    "appUserId": {
+      "type": "number"
+    },
+    "visitDate": {
+      "type": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "serviceId": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "date"
+    },
+    "modifiedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "appUser": {
+      "type": "belongsTo",
+      "model": "AppUser",
+      "foreignKey": "appUserId"
+    },
+	"serviceUser": {
+      "type": "belongsTo",
+      "model": "AppUser",
+      "foreignKey": "serviceId"
+    },
+    "reports": {
+      "type": "hasOne",
+      "model": "Report",
+      "foreignKey": "damageId"
+    },
+    "factors": {
+      "type": "hasOne",
+      "model": "Factor",
+      "foreignKey": "damageId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

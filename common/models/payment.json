@@ -1,0 +1,55 @@
+{
+  "name": "Payment",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "payment"
+    },
+    "validateUpsert": true
+  },
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdAt",
+      "updatedAt": "modifiedAt",
+      "required": false,
+      "validateUpsert": true,
+      "silenceWarnings": false
+    }
+  },
+  "properties": {
+    "appUserId": {
+      "type": "number"
+    },
+    "price": {
+      "type": "number"
+    },
+    "refCode": {
+      "type": "string"
+    },
+    "date": {
+      "type": "date"
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "date"
+    },
+    "modifiedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "factors": {
+      "type": "hasMany",
+      "model": "Factor",
+      "foreignKey": "PaymentId",
+      "through": "FactorPayment",
+      "keyThrough": "FactorId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

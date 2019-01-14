@@ -1,0 +1,43 @@
+{
+  "name": "FactorPayment",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "table": "factor_payment"
+    },
+    "validateUpsert": true
+  },
+  "mixins": {
+    "TimeStamp": {
+      "createdAt": "createdAt",
+      "updatedAt": "modifiedAt",
+      "required": false,
+      "validateUpsert": true,
+      "silenceWarnings": false
+    }
+  },
+  "properties": {
+    "factorId": {
+      "type": "number"
+    },
+    "paymentId": {
+      "type": "number"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "Factor": {
+      "type": "belongsTo",
+      "model": "Factor",
+      "foreignKey": "FactorId"
+    },
+    "Payment": {
+      "type": "belongsTo",
+      "model": "Payment",
+      "foreignKey": "PaymentId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
