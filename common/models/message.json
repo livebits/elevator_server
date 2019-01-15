@@ -3,6 +3,9 @@
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
+    "mysql": {
+      "table": "message"
+    },
     "validateUpsert": true
   },
   "mixins": {
