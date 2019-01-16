@@ -434,7 +434,7 @@ module.exports = function(AppUser) {
         AppUser.login(credentials, null, function (error, loginInfo) {
             if (error) {
                 return cb(null, error);
-            }            
+            }
 
             const userId = loginInfo.userId;
             var isRoleFound = false;
@@ -452,8 +452,11 @@ module.exports = function(AppUser) {
                     var code = Math.floor(Math.random() * (99999 - 10000)) + 10000;
                     AppUser.updateAll({id: userId}, {"verificationCode": code}, function (error, updatedAppUser) {
                         
-                        cb(null, appUser);
+                        let user = {};
+                        user.id = appUser.id;
+
                         sms.sendVerificationCode(phoneNumber, code);
+                        cb(null, user);
                     });
 
                 } else {
@@ -467,7 +470,7 @@ module.exports = function(AppUser) {
     };
     AppUser.remoteMethod('loginAppUser', {
             description: 'Login method that sends only userId',
-            notes: ['{"phoneNumber":"09171234567"}'],
+            notes: ['{"mobile":"09171234567"}'],
             accepts: {arg: 'loginObject', type: 'object', required: true, http: {source: 'body'}},
             returns: {
                 arg: 'accessToken', type: 'object', root: true,
@@ -534,5 +537,113 @@ module.exports = function(AppUser) {
         accepts: {arg: 'verificationObject', type: 'object', http: {source: 'body'}},
         http: {verb: 'post'},
         returns: {root: true, type: 'object'}
+    });
+
+
+    /**
+     * Get all buildings
+     */
+    AppUser.buildings = function (ctx, cb) {
+        
+        let userId = ctx.req.accessToken.userId;
+        const outerFilter = {
+            where: {"id": userId}
+        }
+        AppUser.findById(userId, function (err, queriedUser) {
+            if(err) {
+                cb(err);
+            }
+            
+            // let paginationFilter = ctx.args.filter;
+            let innerFilter = {
+                where: {companyId: queriedUser.companyId},
+                include: [
+                    {
+                        "relation": "roles",
+                        "scope": {
+                            "where": {
+                                "name": "customer"
+                            }
+                        }
+                    }
+                ],
+            //  limit: paginationFilter.limit,
+            //  skip: paginationFilter.skip
+            };
+            AppUser.find(innerFilter, function (err, customers) {
+                if (err) {
+                    return cb(err);
+                }
+
+                let resultCustomers = [];
+                customers.forEach((customer, index) => {
+                    customer = customer.toJSON();
+                    if(customer.roles.length > 0) {
+                        resultCustomers.push(customer);
+                    }
+                });
+
+                cb(err, resultCustomers);
+            })
+        });
+    };
+    AppUser.remoteMethod('buildings', {
+        description: 'Get all buildings',
+        notes: ['only authenticated users can use'],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'get'}
+    });
+
+
+
+    /**
+     * Get all customer factors to pay
+     */
+    AppUser.customerFactorsToPay = function (ctx, cb) {
+        let userId = ctx.req.accessToken.userId;
+
+        const filter = {
+            include: [
+                "appUser",
+                "serviceUser",
+                "reports",
+                {
+                    "relation": "factors",
+                    "scope":{
+                        "include": ["payments", "factorItems"]
+                    }
+                }
+            ],
+            where: {
+                "appUserId": userId
+            }
+        }
+        
+        app.models.Damage.find(filter, function (err, damages) {
+            if(err) {
+                return cb(err);
+            }
+            let result = [];
+            damages.forEach(damage => {
+                damage = damage.toJSON();
+                if(damage.factors !== undefined) {
+                    result.push(damage);
+                }
+            });
+
+            cb(err, result);
+        });
+    };
+    AppUser.remoteMethod('customerFactorsToPay', {
+        description: 'Get all of factors of customer ready to pay',
+        notes: [''],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}}
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'get'}
     });
 };
