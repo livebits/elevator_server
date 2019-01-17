@@ -107,7 +107,12 @@ module.exports = function(Damage) {
         
         Damage.find(filter, function (err, damages) {
             if(err) {
-                return cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }
            
             cb(err, damages);
@@ -150,7 +155,12 @@ module.exports = function(Damage) {
         
         Damage.find(filter, function (err, damages) {
             if(err) {
-                return cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }
            
             cb(err, damages);
@@ -181,7 +191,12 @@ module.exports = function(Damage) {
         let reportObj = {damageId: damageId, body: reportDesc};
         app.models.Report.create(reportObj, function (err, report) {
             if(err) {
-                return cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }
            
             let sumFactor = 0;
@@ -203,7 +218,12 @@ module.exports = function(Damage) {
             let factorObject = {damageId: damageId, status: 'notpaid', paymentStatus: 'online', sumPrice: sumFactor};
             app.models.Factor.create(factorObject, function (err, factor) {
                 if(err) {
-                    return cb(err);
+                    let error = {
+                        error: err,
+                        code: 500,
+                        message: 'خطای سرور رخ داده است.'
+                    }
+                    return cb(error);
                 }
 
                 let finalFactorItems = [];
@@ -216,7 +236,12 @@ module.exports = function(Damage) {
                 //save factor items
                 app.models.FactorItem.create(finalFactorItems, function (err, factorItems) {
                     if(err) {
-                        return cb(err);
+                        let error = {
+                            error: err,
+                            code: 500,
+                            message: 'خطای سرور رخ داده است.'
+                        }
+                        return cb(error);
                     }
 
                     cb(err, factorItems);

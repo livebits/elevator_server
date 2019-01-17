@@ -431,9 +431,14 @@ module.exports = function(AppUser) {
         var phoneNumber = loginObject.mobile;
         var credentials = {username: phoneNumber, password: phoneNumber};
 
-        AppUser.login(credentials, null, function (error, loginInfo) {
-            if (error) {
-                return cb(null, error);
+        AppUser.login(credentials, null, function (err, loginInfo) {
+            if (err) {
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'سمت سرور خطایی رخ داده است'
+                }
+                return cb(error);
             }
 
             const userId = loginInfo.userId;
@@ -460,8 +465,11 @@ module.exports = function(AppUser) {
                     });
 
                 } else {
-                    //     message: "The User Hasn't Registered In " + userRole + " App!"
-                    return cb(null, 'not found user');
+                    let error = {
+                        code: 404,
+                        message: 'این شماره ثبت نشده است'
+                    }
+                    return cb(error);
                 }
             });
 
@@ -509,7 +517,12 @@ module.exports = function(AppUser) {
         var response = {};
         AppUser.findOne({where: {and: [{verificationCode: code}, {id: userId}]}, include: ['roles']}, function (err, user) {
             if(err) {
-                cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }            
 
             if(user !== null) {
@@ -517,7 +530,12 @@ module.exports = function(AppUser) {
                 var credentials = {username: user.mobile, password: user.mobile};
                 AppUser.login(credentials, null, function (error, loginInfo) {
                     if (error) {
-                        return cb(null, error);
+                        let errorObj = {
+                            error: error,
+                            code: 404,
+                            message: 'کاربر مورد نظر یافت نشد.'
+                        }
+                        return cb(errorObj);
                     }
 
                     var au = user.toJSON();
@@ -534,7 +552,11 @@ module.exports = function(AppUser) {
                 });
 
             } else {
-                cb('wrong code');
+                let error = {
+                    code: 1001,
+                    message: 'کد وارد شده اشتباه می باشد.'
+                }
+                return cb(error);
             }
         })
         
@@ -561,7 +583,12 @@ module.exports = function(AppUser) {
         }
         AppUser.findById(userId, function (err, queriedUser) {
             if(err) {
-                cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }
             
             // let paginationFilter = ctx.args.filter;
@@ -582,7 +609,12 @@ module.exports = function(AppUser) {
             };
             AppUser.find(innerFilter, function (err, customers) {
                 if (err) {
-                    return cb(err);
+                    let error = {
+                        error: err,
+                        code: 500,
+                        message: 'خطای سرور رخ داده است.'
+                    }
+                    return cb(error);
                 }
 
                 let resultCustomers = [];
@@ -634,7 +666,12 @@ module.exports = function(AppUser) {
         
         app.models.Damage.find(filter, function (err, damages) {
             if(err) {
-                return cb(err);
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
             }
             let result = [];
             damages.forEach(damage => {
