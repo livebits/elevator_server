@@ -486,7 +486,7 @@ module.exports = function(AppUser) {
         var AppUser = app.models.AppUser;
 
         var code = verifyObject.code;
-        var userId = verifyObject.userId;
+        var userId = verifyObject.id;
         var gcmId = verifyObject.gcmId;
 
         // var verifyFilter = {
@@ -507,7 +507,7 @@ module.exports = function(AppUser) {
         // };
 
         var response = {};
-        AppUser.findOne({where: {and: [{verificationCode: code}, {id: userId}]}}, function (err, user) {
+        AppUser.findOne({where: {and: [{verificationCode: code}, {id: userId}]}, include: ['roles']}, function (err, user) {
             if(err) {
                 cb(err);
             }            
@@ -520,7 +520,17 @@ module.exports = function(AppUser) {
                         return cb(null, error);
                     }
 
-                    cb(null, loginInfo);
+                    var au = user.toJSON();
+                    var roles = au.roles;
+                    for (var i = 0; i < roles.length; i++) {
+                        if (roles[i].name === 'customer' || roles[i].name === 'service') {
+                            user.role = roles[i].name;
+                            break;
+                        }
+                    }
+
+                    user.token = loginInfo;
+                    cb(null, user);
                 });
 
             } else {
@@ -533,7 +543,7 @@ module.exports = function(AppUser) {
 
     AppUser.remoteMethod('checkVerification', {
         description: 'Check If Verification Code Is True',
-        notes: ['{"appUserId":10,"code":"11111","gcmId":"sdfgdhfad"}'],
+        notes: ['{"id":10,"code":"11111","gcmId":"sdfgdhfad"}'],
         accepts: {arg: 'verificationObject', type: 'object', http: {source: 'body'}},
         http: {verb: 'post'},
         returns: {root: true, type: 'object'}
