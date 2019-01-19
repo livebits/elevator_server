@@ -122,11 +122,11 @@ module.exports = function(Damage) {
         description: 'Get damages',
         notes: ['{"showAll": false,"customerId":"1"}'],
         accepts: [
-            {arg: 'serviceObject', type: 'Object'},
+            {arg: 'filter', type: 'Object', http: {source: 'query'}},
             {arg: 'ctx', type: 'object', http: {source: 'context'}}
         ],
         returns: {root: 'true', type: 'array'},
-        http: {verb: 'post'}
+        http: {verb: 'get'}
     });
 
 
