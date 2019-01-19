@@ -126,7 +126,7 @@ module.exports = function(Damage) {
             {arg: 'ctx', type: 'object', http: {source: 'context'}}
         ],
         returns: {root: 'true', type: 'array'},
-        http: {verb: 'get'}
+        http: {verb: 'post'}
     });
 
 
