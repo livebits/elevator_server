@@ -255,7 +255,7 @@ module.exports = function(Damage) {
         description: 'Save report and factor items of damage',
         notes: ['{"damageId":1, "report": "report desc...","factorItems": [{"name":"obj name", "quantity": 2, "unitPrice": 1200}]}'],
         accepts: [
-            {arg: 'damageObject', type: 'Object'},
+            {arg: 'damageObject', type: 'Object', http: {source: 'body'}},
             {arg: 'ctx', type: 'object', http: {source: 'context'}}
         ],
         returns: {root: 'true', type: 'array'},
