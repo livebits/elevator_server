@@ -661,7 +661,8 @@ module.exports = function(AppUser) {
             ],
             where: {
                 "appUserId": userId
-            }
+            },
+            order: 'id DESC',
         }
         
         app.models.Damage.find(filter, function (err, damages) {

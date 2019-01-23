@@ -102,7 +102,8 @@ module.exports = function(Damage) {
                     }
                 }
             ],
-            where: where
+            where: where,
+            order: 'id DESC',
         }
         
         Damage.find(filter, function (err, damages) {
@@ -150,7 +151,8 @@ module.exports = function(Damage) {
             ],
             where: {
                 "appUserId": userId
-            }
+            },
+            order: 'id DESC',
         }
         
         Damage.find(filter, function (err, damages) {
