@@ -32,6 +32,7 @@
     "loopback-import-mixin": "^1.2.2",
     "loopback-paginator": "^1.0.0",
     "serve-favicon": "^2.0.1",
+    "socket.io": "^2.2.0",
     "strong-error-handler": "^3.2.0"
   },
   "devDependencies": {
