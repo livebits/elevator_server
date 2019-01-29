@@ -17,7 +17,7 @@ exports.sendMessage = function (phoneNumbers, message) {
 getToken = function (param1, param2, type) {
 
     var post_data = JSON.stringify({
-        "UserApiKey":"abf992081ca92cc9e2ff9208",
+        "UserApiKey":"5e9427a53fa84f7a29c5522e",
         "SecretKey":"boxit@atria#2017"
     });
     var options = {
