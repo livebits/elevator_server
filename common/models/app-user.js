@@ -2,6 +2,7 @@
 var app = require('../../server/server');
 var csv = require('csvtojson');
 const sms = require('../sms');
+var moment = require('moment-jalaali');
 // const LoopBackContext = require('loopback-context');
 
 module.exports = function(AppUser) {
@@ -22,6 +23,7 @@ module.exports = function(AppUser) {
             ctx.req.body.companyId = queriedUser.companyId;
             ctx.req.body.username = ctx.req.body.mobile + "";
             ctx.req.body.password = ctx.req.body.mobile + "";
+            ctx.req.body.email = ctx.req.body.mobile + "@fixlift.ir";
 
             next();
         });
@@ -48,9 +50,105 @@ module.exports = function(AppUser) {
     // });
 
     AppUser.afterRemote('create', function(ctx, AppUser, next) {
+
+        
+
         if(ctx.req.body.role != undefined) {
-            let role = ctx.req.body.role;
-            setAppUserRole(role, AppUser.id, next);
+
+            let body = ctx.req.body;
+            if(body.dealCost !== undefined) {
+
+                let newDeal = {
+                    appUserId: AppUser.id,
+                    cost: body.dealCost,
+                }
+
+                if(body.dealStartDate !== undefined) {
+                    newDeal['startDate'] = body.dealStartDate;
+                }
+
+                if(body.dealEndDate !== undefined) {
+                    newDeal['endDate'] = body.dealEndDate;
+                }
+
+
+                app.models.Deal.create(newDeal, function (err, deal) {
+                    if (err) {return console.log(err);}
+
+                    //create monthly inspections for customers
+                    let startDate = body.dealStartDate.split("T")[0];
+                    startDate = moment(startDate, 'YYYY-M-D').format('jYYYY-jM-jD')
+                    startDate = startDate.split("-");
+                    console.log(startDate);
+                    
+
+                    let endDate = body.dealEndDate.split("T")[0];
+                    endDate = moment(endDate, 'YYYY-M-D').format('jYYYY-jM-jD')
+                    endDate = endDate.split("-");
+                    console.log(endDate);
+
+                    let dates = [];
+
+                    //same years
+                    if(startDate[0] == endDate[0]) {
+
+                        for(let month = startDate[1]; month <= endDate[1]; month++){
+
+                            dates.push({
+                                customerId: AppUser.id,
+                                year: startDate[0],
+                                month: month,
+                            });
+                        }
+                    } else {
+
+                        for(let year = startDate[0]; year <= endDate[0]; year++){
+                            
+                            if(year == startDate[0]) {
+                                for(let month = startDate[1]; month <= 12; month++) {
+                                    dates.push({
+                                        customerId: AppUser.id,
+                                        year: year,
+                                        month: month,
+                                    });
+                                }
+                            }
+                            else if(year < endDate[0]) {
+                                for(let month1 = 1; month1 <= 12; month1++) {
+                                    dates.push({
+                                        customerId: AppUser.id,
+                                        year: year,
+                                        month: month1,
+                                    });
+                                }
+                            }
+                            else if(year == endDate[0]) {
+                                for(let month2 = 1; month2 <= endDate[1]; month2++) {
+                                    dates.push({
+                                        customerId: AppUser.id,
+                                        year: year,
+                                        month: month2,
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    app.models.Inspection.create(dates, function (err, inspections) {
+                        if (err) {return console.log(err);}
+                        
+                        let role = ctx.req.body.role;
+                        setAppUserRole(role, AppUser.id, next);
+                    });
+
+                })
+
+            } else {
+
+                let role = ctx.req.body.role;
+                setAppUserRole(role, AppUser.id, next);
+            }
+
         } else {
             next();
         }
@@ -305,6 +403,74 @@ module.exports = function(AppUser) {
     };
     AppUser.remoteMethod('serviceUsers', {
         description: 'Get all service users',
+        notes: ['only authenticated users can use'],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'get'}
+    });
+
+    AppUser.serviceUsersPerformanceReport = function (ctx, cb) {
+        
+        let userId = ctx.req.accessToken.userId;
+        const outerFilter = {
+            where: {"id": userId}
+        }
+        app.models.Manager.findOne(outerFilter, function (err, queriedUser) {
+            if(err) {
+                cb(err);
+            }
+            
+            // let paginationFilter = ctx.args.filter;
+            let innerFilter = {
+                where: {companyId: queriedUser.companyId},
+                include: [
+                    {
+                        "relation": "roles",
+                        "scope": {
+                            "where": {
+                                "name": "service"
+                            }
+                        }
+                    }, "damages"
+                ],
+            //  limit: paginationFilter.limit,
+            //  skip: paginationFilter.skip
+            };
+            AppUser.find(innerFilter, function (err, customers) {
+                if (err) {
+                    return cb(err);
+                }
+
+                let resultCustomers = [];
+                customers.forEach((customer, index) => {
+                    customer = customer.toJSON();
+                    if(customer.roles.length > 0) {
+                        let damages = 0;
+                        let EmgDamages = 0;
+
+                        customer.damages.forEach(damage => {
+                            if(damage.isEMG === 1) {
+                                EmgDamages++;
+                            } else {
+                                damages++;
+                            }
+                        });
+
+                        customer.EmgDamagesCount = EmgDamages;
+                        customer.DamagesCount = damages;
+
+                        resultCustomers.push(customer);
+                    }
+                });
+
+                cb(err, resultCustomers);
+            })
+        });
+    };
+    AppUser.remoteMethod('serviceUsersPerformanceReport', {
+        description: 'Get all service users performance report',
         notes: ['only authenticated users can use'],
         accepts: [
             {arg: 'ctx', type: 'object', http: {source: 'context'}},

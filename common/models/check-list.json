@@ -1,10 +1,10 @@
 {
-  "name": "Damage",
+  "name": "CheckList",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "mysql": {
-      "table": "damage"
+      "table": "check_list"
     },
     "validateUpsert": true
   },
@@ -18,22 +18,16 @@
     }
   },
   "properties": {
-    "appUserId": {
+    "companyId": {
       "type": "number"
     },
-    "visitDate": {
-      "type": "date"
+    "title": {
+      "type": "string"
     },
     "description": {
       "type": "string"
     },
     "status": {
-      "type": "string"
-    },
-    "serviceId": {
-      "type": "string"
-    },
-    "isEMG": {
       "type": "boolean"
     },
     "createdAt": {
@@ -45,25 +39,10 @@
   },
   "validations": [],
   "relations": {
-    "appUser": {
+    "manager": {
       "type": "belongsTo",
-      "model": "AppUser",
-      "foreignKey": "appUserId"
-    },
-    "serviceUser": {
-      "type": "belongsTo",
-      "model": "AppUser",
-      "foreignKey": "serviceId"
-    },
-    "reports": {
-      "type": "hasOne",
-      "model": "Report",
-      "foreignKey": "damageId"
-    },
-    "factors": {
-      "type": "hasOne",
-      "model": "Factor",
-      "foreignKey": "damageId"
+      "model": "Manager",
+      "foreignKey": "companyId"
     }
   },
   "acls": [],

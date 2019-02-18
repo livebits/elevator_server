@@ -3,22 +3,116 @@ var app = require('../../server/server');
 
 module.exports = function(Damage) {
 
+    
+    Damage.DamagesDetail = function (ctx, damageId, cb) {
+
+        let filter = {
+            include: ['appUser', 'serviceUser', 'reports', 'factors']
+        };
+        Damage.findById(damageId, filter, function (err, damage) {
+            if (err) {
+                return cb(err);
+            }
+            
+            cb(err, damage);
+        });
+
+
+    };
+    Damage.remoteMethod('DamagesDetail', {
+        description: 'Show damage detail',
+        notes: ['Show damage detail'],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            {"arg": "id", "required": true, "type": "number", http: {source: 'path'}, description: 'damage id'}
+        ],
+        returns: {
+            arg: 'res', type: 'Array', root: true
+        },
+        http: {path: '/DamagesDetail/:id', verb: 'get'}
+    });
+
     /**
      * Get all damages
      */
-    Damage.AllDamages = function (ctx, cb) {
+    Damage.AllDamages = function (ctx, filter, cb) {
+
+        let filterObject = filter.filter;
         
         let userId = ctx.req.accessToken.userId;
         const outerFilter = {
-            where: {"id": userId}
+            where: {
+                "id": userId
+            }
         }
         app.models.Manager.findOne(outerFilter, function (err, queriedManager) {
             if(err) {
                 cb(err);
             }
+
+            let whereFilter = {};
+            let now = new Date();
+            now = now.toLocaleString();
+
+            if(filterObject.status === undefined || filterObject.status === "all") {
+                whereFilter = {
+                    isEMG: null
+                }
+            } else if(filterObject.status === "expired") {
+                whereFilter = {
+                    and: [
+                        {
+                            visitDate: {lt: now}
+                        },
+                        {
+                            description: ""
+                        },
+                        {
+                            isEMG: null
+                        }
+                    ]
+                }
+            } else if(filterObject.status === "inFuture") {
+                whereFilter = {
+                    and: [
+                        {
+                            visitDate: {gt: now}
+                        },
+                        {
+                            description: ""
+                        },
+                        {
+                            isEMG: null
+                        }
+                    ]
+                }
+            } else if(filterObject.status === "done") {
+                whereFilter = {
+                    and: [
+                        {
+                            description: {neq: ""},
+                        },
+                        {
+                            isEMG: null
+                        }
+                    ]
+                }
+            } else if(filterObject.status === "notAssigned") {
+                whereFilter = {
+                    and: [
+                        {
+                            serviceId: null
+                        },
+                        {
+                            isEMG: null
+                        }
+                    ]
+                }
+            }
             
             // let paginationFilter = ctx.args.filter;
             let innerFilter = {
+                where: whereFilter,
                 include: [ "factors", "reports",
                     {
                         "relation": "appUser",
@@ -32,6 +126,8 @@ module.exports = function(Damage) {
             //  limit: paginationFilter.limit,
             //  skip: paginationFilter.skip
             };
+            console.log(JSON.stringify(innerFilter));
+            
             Damage.find(innerFilter, function (err, damages) {
                 if (err) {
                     return cb(err);
@@ -54,6 +150,131 @@ module.exports = function(Damage) {
         notes: ['only authenticated users can use'],
         accepts: [
             {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            {arg: 'filter', type: 'Object', http: {source: 'query'}},
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'get'}
+    });
+
+    /**
+     * Get all emergency damages
+     */
+    Damage.AllEMGDamages = function (ctx, cb) {
+
+        // let filterObject = filter.filter;
+        
+        let userId = ctx.req.accessToken.userId;
+        const outerFilter = {
+            where: {
+                "id": userId
+            }
+        }
+        app.models.Manager.findOne(outerFilter, function (err, queriedManager) {
+            if(err) {
+                cb(err);
+            }
+
+            // let whereFilter = {};
+            // let now = new Date();
+            // now = now.toLocaleString();
+
+            // if(filterObject.status === undefined || filterObject.status === "all") {
+            //     whereFilter = {
+            //         isEMG: null
+            //     }
+            // } else if(filterObject.status === "expired") {
+            //     whereFilter = {
+            //         and: [
+            //             {
+            //                 visitDate: {lt: now}
+            //             },
+            //             {
+            //                 description: ""
+            //             },
+            //             {
+            //                 isEMG: null
+            //             }
+            //         ]
+            //     }
+            // } else if(filterObject.status === "inFuture") {
+            //     whereFilter = {
+            //         and: [
+            //             {
+            //                 visitDate: {gt: now}
+            //             },
+            //             {
+            //                 description: ""
+            //             },
+            //             {
+            //                 isEMG: null
+            //             }
+            //         ]
+            //     }
+            // } else if(filterObject.status === "done") {
+            //     whereFilter = {
+            //         and: [
+            //             {
+            //                 description: {neq: ""},
+            //             },
+            //             {
+            //                 isEMG: null
+            //             }
+            //         ]
+            //     }
+            // } else if(filterObject.status === "notAssigned") {
+            //     whereFilter = {
+            //         and: [
+            //             {
+            //                 serviceId: null
+            //             },
+            //             {
+            //                 isEMG: null
+            //             }
+            //         ]
+            //     }
+            // }
+            
+            // let paginationFilter = ctx.args.filter;
+            let innerFilter = {
+                where: {isEMG: 1},
+                include: [ "factors", "reports",
+                    {
+                        "relation": "appUser",
+                        "scope": {
+                            "where": {
+                                "companyId": queriedManager.companyId
+                            }
+                        }
+                    }
+                ],
+            //  limit: paginationFilter.limit,
+            //  skip: paginationFilter.skip
+            };
+            console.log(JSON.stringify(innerFilter));
+            
+            Damage.find(innerFilter, function (err, damages) {
+                if (err) {
+                    return cb(err);
+                }
+
+                let resultDamages = [];
+                damages.forEach((damage, index) => {
+                    damage = damage.toJSON();
+                    if(damage.appUser != undefined) {
+                        resultDamages.push(damage);
+                    }
+                });
+
+                cb(err, resultDamages);
+            })
+        });
+    };
+    Damage.remoteMethod('AllEMGDamages', {
+        description: 'Get all emg damages',
+        notes: ['only authenticated users can use'],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            // {arg: 'filter', type: 'Object', http: {source: 'query'}},
         ],
         returns: {root: 'true', type: 'array'},
         http: {verb: 'get'}

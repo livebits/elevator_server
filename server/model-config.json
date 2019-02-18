@@ -110,5 +110,13 @@
   "Message": {
     "dataSource": "db",
     "public": true
+  },
+  "CheckList": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Inspection": {
+    "dataSource": "db",
+    "public": true
   }
 }

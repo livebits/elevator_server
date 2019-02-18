@@ -1,10 +1,10 @@
 {
-  "name": "Damage",
+  "name": "Inspection",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "mysql": {
-      "table": "damage"
+      "table": "inspection"
     },
     "validateUpsert": true
   },
@@ -18,23 +18,26 @@
     }
   },
   "properties": {
-    "appUserId": {
+    "customerId": {
       "type": "number"
     },
-    "visitDate": {
-      "type": "date"
+    "year": {
+      "type": "number"
     },
-    "description": {
-      "type": "string"
+    "month": {
+      "type": "number"
+    },
+    "doneTime": {
+      "type": "date"
     },
     "status": {
       "type": "string"
     },
     "serviceId": {
-      "type": "string"
+      "type": "number"
     },
-    "isEMG": {
-      "type": "boolean"
+    "description": {
+      "type": "string"
     },
     "createdAt": {
       "type": "date"
@@ -48,22 +51,12 @@
     "appUser": {
       "type": "belongsTo",
       "model": "AppUser",
-      "foreignKey": "appUserId"
+      "foreignKey": "customerId"
     },
     "serviceUser": {
       "type": "belongsTo",
       "model": "AppUser",
       "foreignKey": "serviceId"
-    },
-    "reports": {
-      "type": "hasOne",
-      "model": "Report",
-      "foreignKey": "damageId"
-    },
-    "factors": {
-      "type": "hasOne",
-      "model": "Factor",
-      "foreignKey": "damageId"
     }
   },
   "acls": [],

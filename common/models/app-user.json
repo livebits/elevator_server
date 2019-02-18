@@ -89,6 +89,9 @@
       "type": "string",
       "length": 1000
     },
+    "debt": {
+      "type": "number"
+    },
     "createdAt": {
       "type": "date"
     },

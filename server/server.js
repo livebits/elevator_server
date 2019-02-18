@@ -84,6 +84,7 @@ boot(app, __dirname, function(err) {
 
       socket.on('data', function (value) {
         console.log('data: ', value);
+        socket.emit('check', "success");
       });
     });
   }
