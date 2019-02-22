@@ -18,6 +18,9 @@
     }
   },
   "properties": {
+    "companyId": {
+      "type": "number"
+    },
     "companyName": {
       "type": "string"
     },

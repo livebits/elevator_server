@@ -403,15 +403,16 @@ module.exports = function(Damage) {
      * Save report and factor items for damage
      */
     Damage.saveReportFactor = function (damageObject, ctx, cb) {
-        let userId = ctx.req.accessToken.userId;
+        // let userId = ctx.req.accessToken.userId;
         // {"damageId":1, "report": "report desc...","factorItems": [{"name":"obj name", "quantity": 2, "unitPrice": 1200}]}
 
         let damageId = damageObject.damageId;
         let reportDesc = damageObject.report;
+        let checkList = JSON.stringify(damageObject.checkList);
         let factorItems = damageObject.factorItems;
         
         //save report
-        let reportObj = {damageId: damageId, body: reportDesc};
+        let reportObj = {damageId: damageId, body: reportDesc, checkList: checkList};
         app.models.Report.create(reportObj, function (err, report) {
             if(err) {
                 let error = {
@@ -425,13 +426,13 @@ module.exports = function(Damage) {
             let sumFactor = 0;
             let myFactorItems = [];
             factorItems.forEach(item => {
-                let price = item.quantity * item.unitPrice;
+                let price = 0;
 
                 myFactorItems.push({
                     name: item.name,
                     quantity: item.quantity,
-                    unitPrice: item.unitPrice,
-                    total: price,
+                    unitPrice: 0,
+                    total: 0,
                 });
 
                 sumFactor += price;
@@ -476,7 +477,7 @@ module.exports = function(Damage) {
     };
     Damage.remoteMethod('saveReportFactor', {
         description: 'Save report and factor items of damage',
-        notes: ['{"damageId":1, "report": "report desc...","factorItems": [{"name":"obj name", "quantity": 2, "unitPrice": 1200}]}'],
+        notes: ['{"damageId":1, "report": "report desc...","factorItems": [{"name":"obj name", "quantity": 2, "unitPrice": 1200}], "checkList": [{"name": "door"}]}'],
         accepts: [
             {arg: 'damageObject', type: 'Object', http: {source: 'body'}},
             {arg: 'ctx', type: 'object', http: {source: 'context'}}

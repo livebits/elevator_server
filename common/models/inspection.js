@@ -95,7 +95,7 @@ module.exports = function(Inspection) {
         let startDate = inspectionObject.doneTime.split("T")[0];
         startDate = moment(startDate, 'YYYY-M-D').format('jYYYY-jM-jD')
         startDate = startDate.split("-");
-
+        console.log(inspectionObject);
         let where = {
             where: {
                 and: [
@@ -111,7 +111,6 @@ module.exports = function(Inspection) {
                 ]
             }
         }
-        console.log(JSON.stringify(where));
         
         Inspection.findOne(where, function (err, inspection) {
             if(err) {
@@ -132,7 +131,19 @@ module.exports = function(Inspection) {
                     cb(null, updatedInspection);
                 })
             } else {
-                cb(null, inspectionObject);
+                Inspection.create({
+                    customerId: inspectionObject.appUserId,
+                    year: startDate[0],
+                    month: startDate[1],
+                    doneTime: inspectionObject.doneTime,
+                    serviceId: inspectionObject.serviceId, 
+                    description: inspectionObject.description}, function (err, addedInspection) {
+                    if(err) {
+                        return cb(err);
+                    }
+    
+                    cb(null, addedInspection);
+                })
             }
             
         })

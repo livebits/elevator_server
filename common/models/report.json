@@ -27,6 +27,9 @@
     "status": {
       "type": "string"
     },
+    "checkList": {
+      "type": "string"
+    },
     "createdAt": {
       "type": "date"
     },
