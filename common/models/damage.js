@@ -1,6 +1,8 @@
 'use strict';
 var app = require('../../server/server');
 
+var fcm = require('../fcm');
+
 module.exports = function(Damage) {
 
     
@@ -468,7 +470,26 @@ module.exports = function(Damage) {
                         return cb(error);
                     }
 
-                    cb(err, factorItems);
+                    //send fcm notif to customer
+                    Damage.findById(damageId, {include: "appUser"}, function (err, damage) {
+                        if(err) {
+                            let error = {
+                                error: err,
+                                code: 500,
+                                message: 'خطای سرور رخ داده است.'
+                            }
+                            return cb(error);
+                        }
+                        let damageObject = damage.toJSON();
+                    
+                        if(damageObject.appUser.fcmToken !== null && damageObject.appUser.fcmToken !== ""){
+                            fcm.sendDataMessage("", "سرویس کار برای خرابی آسانسور شما گزارش ثبت کرده است", {"id": damageObject.id+""}, damageObject.appUser.fcmToken);
+                        }
+                              
+                        
+                        cb(err, factorItems);
+                    })
+
                 });
             });
 
@@ -481,6 +502,146 @@ module.exports = function(Damage) {
         accepts: [
             {arg: 'damageObject', type: 'Object', http: {source: 'body'}},
             {arg: 'ctx', type: 'object', http: {source: 'context'}}
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'post'}
+    });
+
+    Damage.Update = function (ctx, data, cb) {
+        
+        // let userId = ctx.req.accessToken.userId;
+        Damage.updateAll({id: data.id}, data, function (err, updatedDamage) {
+            if(err) {
+                cb(err);
+            }
+
+            let userId = ctx.req.accessToken.userId;
+            const outerFilter = {
+                where: {
+                    "id": userId
+                }
+            }
+            app.models.Manager.findOne(outerFilter, function (err, queriedManager) {
+                if(err) {
+                    cb(err);
+                }
+
+                let whereFilter = {
+                    id: data.id
+                };
+                
+                let innerFilter = {
+                    where: whereFilter,
+                    include: [ "factors", "reports",
+                        {
+                            "relation": "appUser",
+                            "scope": {
+                                "where": {
+                                    "companyId": queriedManager.companyId
+                                }
+                            }
+                        },
+                        {
+                            "relation": "serviceUser",
+                            "scope": {
+                                "where": {
+                                    "companyId": queriedManager.companyId
+                                }
+                            }
+                        }
+                    ],
+                };
+                
+                Damage.findOne(innerFilter, function (err, damage) {
+                    if (err) {
+                        return cb(err);
+                    }
+
+                    let damageObject = damage.toJSON();
+                    
+                    if(damageObject.appUser.fcmToken !== null && damageObject.appUser.fcmToken !== "")
+                        fcm.sendDataMessage("", "برای خرابی ثبت شده توسط شما سرویس کار تعیین شده است.", {"id": damageObject.id+""}, damageObject.appUser.fcmToken);
+                                        
+                    if(damageObject.serviceUser !== undefined 
+                        && damageObject.serviceUser.fcmToken !== undefined
+                        && damageObject.serviceUser.fcmToken !== null
+                        && damageObject.serviceUser.fcmToken !== "") {
+                        fcm.sendDataMessage("", "خرابی جدیدی برای شما تعیین شده است.", {"id": damageObject.id + ""}, damageObject.serviceUser.fcmToken);
+                    }
+
+                    return cb(err, damage);
+                })
+
+            });
+
+        });
+    };
+    Damage.remoteMethod('Update', {
+        description: 'update damage',
+        notes: ['update damage'],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            {arg: 'data', type: 'object', http: {source: 'body'}},
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: { verb: 'patch'}
+    });
+
+    Damage.sendNotification = function (data, ctx, cb) {
+        fcm.sendDataMessage("onvan", "matn", data, "c_CvfPQnqFA:APA91bG48oFhdUrMA-4M9-gk-V8PqWbS94jfoqAuOuzOWZsA0tMKlUB95c7RubDxAh1NYEXP8wS7AQ-FQnRGTzEmHK_zgylVsEa40Bfm7lNKj7lo8LwLyeMJyLNWg2FgXiC0Lq0rptpA")
+        return cb(null, "message sent successfully");
+    };
+    Damage.remoteMethod('sendNotification', {
+        description: 'Send notification',
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            {arg: 'data', type: 'Object', http: {source: 'body'}},
+        ],
+        returns: {root: 'true', type: 'array'},
+        http: {verb: 'post'}
+    });
+
+
+    /**
+     * Get damage detail
+     */
+    Damage.GetDamage = function (ctx, data, cb) {
+        console.log("get detail");
+        
+
+        const filter = {
+            include: [
+                "appUser",
+                "serviceUser",
+                "reports",
+                {
+                    "relation": "factors",
+                    "scope":{
+                        "include": ["payments", "factorItems"]
+                    }
+                }
+            ]
+        }
+        
+        Damage.findById(data.id, filter, function (err, damage) {
+            if(err) {
+                let error = {
+                    error: err,
+                    code: 500,
+                    message: 'خطای سرور رخ داده است.'
+                }
+                return cb(error);
+            }
+           
+            cb(err, damage);
+        });
+    };
+    Damage.remoteMethod('GetDamage', {
+        description: 'Get damage detail',
+        notes: [''],
+        accepts: [
+            {arg: 'ctx', type: 'object', http: {source: 'context'}},
+            {arg: 'data', type: 'Object', http: {source: 'body'}},
         ],
         returns: {root: 'true', type: 'array'},
         http: {verb: 'post'}

@@ -2,6 +2,9 @@
 
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var admin = require('firebase-admin');
+
+var serviceAccount = require('./elevator-d6820-firebase-adminsdk-k5fa8-548a2c163c.json');
 
 var app = module.exports = loopback();
 
@@ -14,6 +17,11 @@ app.start = function() {
     if (app.get('loopback-component-explorer')) {
       var explorerPath = app.get('loopback-component-explorer').mountPath;
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://elevator-d6820.firebaseio.com"
+      });
     }
   });
 };
@@ -84,7 +92,7 @@ boot(app, __dirname, function(err) {
 
       socket.on('data', function (value) {
         console.log('data: ', value);
-        socket.emit('check', "success");
+        app.socketServer.emit('check', "success");
       });
     });
   }

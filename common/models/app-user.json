@@ -92,6 +92,9 @@
     "debt": {
       "type": "number"
     },
+    "fcmToken": {
+      "type": "string"
+    },
     "createdAt": {
       "type": "date"
     },

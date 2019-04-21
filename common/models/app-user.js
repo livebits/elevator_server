@@ -153,8 +153,6 @@ module.exports = function(AppUser) {
             next();
         }
     });
-
-
     
     AppUser.ImportUsers = function (ctx, options, cb) {
         const TAG = "#uploadProfilePicture: ";
@@ -661,7 +659,7 @@ module.exports = function(AppUser) {
 
         var code = verifyObject.code;
         var userId = verifyObject.id;
-        var gcmId = verifyObject.gcmId;
+        var fcmToken = verifyObject.fcmToken;
 
         // var verifyFilter = {
         //     where: {
@@ -714,7 +712,13 @@ module.exports = function(AppUser) {
                     }
 
                     user.token = loginInfo;
-                    cb(null, user);
+
+                    //update app user fcm token
+                    AppUser.updateAll({id: user.id}, {"fcmToken": fcmToken}, function (error, updatedAppUser) {
+                        
+                        cb(null, user);
+                    });
+
                 });
 
             } else {
