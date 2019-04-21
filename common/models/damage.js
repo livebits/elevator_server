@@ -410,7 +410,7 @@ module.exports = function(Damage) {
 
         let damageId = damageObject.damageId;
         let reportDesc = damageObject.report;
-        let checkList = JSON.stringify(damageObject.checkList);
+        let checkList = damageObject.checkList;
         let factorItems = damageObject.factorItems;
         
         //save report
