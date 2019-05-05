@@ -45,7 +45,7 @@ module.exports = function(Report) {
 
                 let resultReports = [];
                 reports.forEach((report, index) => {
-                    report = report.toJSON();
+                    // report = report.toJSON();
                     if(report.damage.appUser != undefined) {
                         resultReports.push(report);
                     }

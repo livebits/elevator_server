@@ -45,7 +45,7 @@ module.exports = function(Factor) {
 
                 let resultFactors = [];
                 factors.forEach((factor, index) => {
-                    factor = factor.toJSON();
+                    // factor = factor.toJSON();
                     if(factor.damage.appUser != undefined) {
                         resultFactors.push(factor);
                     }
