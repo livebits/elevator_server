@@ -431,7 +431,7 @@ module.exports = function(AppUser) {
                                 "name": "service"
                             }
                         }
-                    }, "damages"
+                    }, "serviceDamages"
                 ],
             //  limit: paginationFilter.limit,
             //  skip: paginationFilter.skip
