@@ -39,10 +39,10 @@ module.exports = function(Deal) {
                 }
 
                 let resultDeals = [];
-                deals.forEach((deal, index) => {
-                    deal = deal.toJSON();
-                    if(deal.appUser != undefined) {
-                        resultDeals.push(deal);
+                deals.forEach((dealItem, index) => {
+                    let d = dealItem.toJSON();
+                    if(d.appUser !== undefined) {
+                        resultDeals.push(d);
                     }
                 });
 

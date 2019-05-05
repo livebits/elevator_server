@@ -45,17 +45,17 @@ module.exports = function(Payment) {
                 }                
 
                 let result = [];
-                factors.forEach((factor, index) => {
-                    factor = factor.toJSON();
+                factors.forEach((factorItem, index) => {
+                    let fctr = factorItem.toJSON();
 
                     let paymentObject = {}
 
-                    if(factor.damage.appUser != undefined && factor.payments != undefined) {
+                    if(fctr.damage !== undefined && fctr.damage.appUser !== undefined && fctr.payments !== undefined) {
 
-                        factor.payments.forEach((payment, index) => {
+                        fctr.payments.forEach((payment, index) => {
                             
                             paymentObject = payment;
-                            paymentObject.factorId = factor.id;
+                            paymentObject.factorId = fctr.id;
 
                             result.push(paymentObject);
                         });

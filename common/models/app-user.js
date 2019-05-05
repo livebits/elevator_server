@@ -448,7 +448,7 @@ module.exports = function(AppUser) {
                         let damages = 0;
                         let EmgDamages = 0;
 
-                        customer.damages.forEach(damage => {
+                        customer.serviceDamages.forEach(damage => {
                             if(damage.isEMG === 1) {
                                 EmgDamages++;
                             } else {

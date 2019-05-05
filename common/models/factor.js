@@ -44,10 +44,10 @@ module.exports = function(Factor) {
                 }                
 
                 let resultFactors = [];
-                factors.forEach((factor, index) => {
-                    // factor = factor.toJSON();
-                    if(factor.damage.appUser != undefined) {
-                        resultFactors.push(factor);
+                factors.forEach((factorItem, index) => {
+                    let fctr = factorItem.toJSON();
+                    if(fctr.damage !== undefined && fctr.damage.appUser !== undefined) {
+                        resultFactors.push(fctr);
                     }
                 });
 
